@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException 
+from fastapi import FastAPI, HTTPException  # type: ignore
 from typing import List
 from schemas import Product, ProductCreate
 
