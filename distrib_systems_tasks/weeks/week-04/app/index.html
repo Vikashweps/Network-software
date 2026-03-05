@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🍕 Saga Tester</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 700px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+    .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { color: #333; }
+    h2 { color: #555; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+    .form-group { margin: 10px 0; }
+    label { display: block; margin-bottom: 5px; font-weight: 500; }
+    input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+    button { background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-right: 8px; margin-top: 8px; }
+    button:hover { background: #45a049; }
+    button.secondary { background: #2196F3; }
+    button.secondary:hover { background: #1976D2; }
+    button.danger { background: #f44336; }
+    button.danger:hover { background: #d32f2f; }
+    .response { background: #1e1e1e; color: #0f0; padding: 12px; border-radius: 6px; font-family: monospace; white-space: pre-wrap; max-height: 250px; overflow: auto; margin-top: 10px; }
+    .success { color: #4CAF50; }
+    .error { color: #f44336; }
+  </style>
+</head>
+<body>
+  <h1>🍕 Saga Pattern Tester</h1>
+  
+  <div class="card">
+    <h2>🔄 Reserve / Restore</h2>
+    <div class="form-group">
+      <label>ID продукта</label>
+      <input type="number" id="prodId" value="1" min="1" max="4">
+    </div>
+    <div class="form-group">
+      <label>Количество</label>
+      <input type="number" id="qty" value="1" min="1">
+    </div>
+    <div class="form-group">
+      <label>ID заказа (для идемпотентности)</label>
+      <input type="number" id="orderId" value="1001">
+    </div>
+    <button class="secondary" onclick="reserve()">🔒 Reserve</button>
+    <button class="danger" onclick="restore()">↩️ Restore</button>
+    <button onclick="checkProduct()">👁️ Проверить stock</button>
+    <div class="response" id="sagaResp">Нажмите кнопку для теста...</div>
+  </div>
+
+  <div class="card">
+    <h2>📦 Список товаров</h2>
+    <div class="response" id="productsResp">Загрузка...</div>
+  </div>
+
+  <script>
+    const API_BASE = '/api/products';
+
+    function show(el, data) {
+      const out = document.getElementById(el);
+      out.textContent = JSON.stringify(data, null, 2);
+      out.className = 'response ' + (data.ok ? 'success' : 'error');
+    }
+
+    async function req(url, method = 'GET', body = null, headers = {}) {
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json', ...headers },
+          body: body ? JSON.stringify(body) : null
+        });
+        const json = await res.json().catch(() => ({}));
+        return { ok: res.ok, status: res.status, data: json };
+      } catch (e) {
+        return { ok: false, status: 0, data: { error: e.message } };
+      }
+    }
+
+    async function reserve() {
+      const prodId = +document.getElementById('prodId').value;
+      const quantity = +document.getElementById('qty').value;
+      const orderId = +document.getElementById('orderId').value;
+      
+      const res = await req(
+        `${API_BASE}/${prodId}/reserve`, 
+        'POST', 
+        { quantity }, 
+        { 'X-Order-Id': orderId }
+      );
+      show('sagaResp', res);
+      loadProducts(); // обновить список после действия
+    }
+
+    async function restore() {
+      const prodId = +document.getElementById('prodId').value;
+      const quantity = +document.getElementById('qty').value;
+      const orderId = +document.getElementById('orderId').value;
+      
+      const res = await req(
+        `${API_BASE}/${prodId}/restore`, 
+        'POST', 
+        { quantity }, 
+        { 'X-Order-Id': orderId }
+      );
+      show('sagaResp', res);
+      loadProducts();
+    }
+
+    async function checkProduct() {
+      const prodId = +document.getElementById('prodId').value;
+      const res = await req(`${API_BASE}/${prodId}`);
+      show('sagaResp', res);
+    }
+
+    async function loadProducts() {
+      const res = await req(`${API_BASE}/`);
+      if (res.ok && Array.isArray(res.data)) {
+        const table = res.data.map(p => 
+          `#${p.id} ${p.name}: ${p.stock_quantity} шт. | ${p.price}₽`
+        ).join('\n');
+        document.getElementById('productsResp').textContent = table;
+      } else {
+        show('productsResp', res);
+      }
+    }
+    loadProducts();
+  </script>
+</body>
+</html>
