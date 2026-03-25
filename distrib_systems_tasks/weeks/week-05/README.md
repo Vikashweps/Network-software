@@ -55,13 +55,12 @@ mutation {
   createProduct(input: {
     name: "Ноутбук",
     price: 500.00,
-    inStock: true
-  }) {
+    inStock: true}) {
     id
     name
     price
+  } 
   }
-}
 ```
 2. получить список 
 

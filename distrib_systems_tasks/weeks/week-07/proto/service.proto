@@ -1,16 +1,58 @@
 syntax = "proto3";
 
-// Опишите ваш пакет и сервис здесь
-// package example;
+// Пакет согласно варианту
+package users.v1;
 
-// service MyService {
-//   rpc MyMethod (MyRequest) returns (MyResponse);
-// }
+// Сервис UsersService (согласно варианту)
+service UsersService {
+  // Unary RPC: создание пользователя
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  
+  // Unary RPC: получение пользователя по ID
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  
+  // Unary RPC: получение списка всех пользователей
+  rpc GetUsers(GetUsersRequest) returns (GetUsersResponse);
+}
 
-// message MyRequest {
-//   string id = 1;
-// }
+// Сообщение для создания пользователя
+message CreateUserRequest {
+  string name = 1;
+  string email = 2;  // extra_field из варианта
+}
 
-// message MyResponse {
-//   string result = 1;
-// }
+// Сообщение ответа при создании
+message CreateUserResponse {
+  int32 id = 1;
+  string name = 2;
+  string email = 3;
+}
+
+// Сообщение для получения пользователя по ID
+message GetUserRequest {
+  int32 id = 1;
+}
+
+// Сообщение ответа при получении
+message GetUserResponse {
+  int32 id = 1;
+  string name = 2;
+  string email = 3;
+}
+
+// Сообщение для получения списка (можно добавить пагинацию)
+message GetUsersRequest {
+  // пусто пока
+}
+
+// Сообщение ответа со списком пользователей
+message GetUsersResponse {
+  repeated User users = 1;
+}
+
+// Общий тип User
+message User {
+  int32 id = 1;
+  string name = 2;
+  string email = 3;  // extra_field из варианта
+}
