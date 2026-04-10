@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package likes.v1;
+
+service LikesService {
+  // Unary RPC: Создать лайк
+  rpc CreateLike(CreateLikeRequest) returns (Like);
+
+  // Unary RPC: Получить лайк по ID
+  rpc GetLike(GetLikeRequest) returns (Like);
+
+  // Unary RPC: Получить список всех лайков
+  rpc ListLikes(ListLikesRequest) returns (ListLikesResponse);
+
+  // Server Streaming RPC: Поток лайков (например, все лайки подряд или по фильтру)
+  // Клиент отправляет один запрос, сервер возвращает поток объектов Like
+  rpc StreamLikes(StreamLikesRequest) returns (stream Like);
+}
+
+// Сообщение Like
+message Like {
+  int32 id = 1;
+  string author = 2;   // Кто поставил лайк
+  string target = 3;   // extra_field из варианта: что лайкнули (пост, фото и т.д.)
+  int64 created_at = 4; // Timestamp
+}
+
+// Request для создания
+message CreateLikeRequest {
+  string author = 1;
+  string target = 2;
+}
+
+// Request для получения одного
+message GetLikeRequest {
+  int32 id = 1;
+}
+
+// Request для списка
+message ListLikesRequest {
+  // Можно добавить пагинацию позже
+}
+
+// Response для списка (Unary)
+message ListLikesResponse {
+  repeated Like likes = 1;
+}
+
+// Request для стриминга
+message StreamLikesRequest {
+  // Например, можно фильтровать по target, если пусто - шлем все
+  string target_filter = 1;
+  int32 count = 2; // Сколько сообщений отправить в потоке перед закрытием (для теста)
+}

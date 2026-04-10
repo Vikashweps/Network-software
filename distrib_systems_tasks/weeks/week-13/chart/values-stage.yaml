@@ -1,6 +1,26 @@
-replicaCount: 2
+# Prod: 3 реплики, больше ресурсов, фиксированный тег
+replicaCount: 3
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "200m"
+  limits:
+    memory: "512Mi"
+    cpu: "1000m"
+
+probes:
+  liveness:
+    initialDelaySeconds: 30
+    failureThreshold: 5
+  readiness:
+    initialDelaySeconds: 20
+    failureThreshold: 5
+
 image:
-  repository: primer/obraz
-  tag: "stage"
-service:
-  port: 8000
+  tag: "v1.0.0"
+  pullPolicy: Always
+
+env:
+  DEBUG: "false"
+  LOG_LEVEL: "info"

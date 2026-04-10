@@ -1,1 +1,16 @@
-# В этом месте вам необходимо: Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: shipments-svc-s16
+  labels:
+    app: shipments-app
+    student: s16
+spec:
+  type: ClusterIP
+  selector:
+    app: shipments-app
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8230          
+      targetPort: 8230    

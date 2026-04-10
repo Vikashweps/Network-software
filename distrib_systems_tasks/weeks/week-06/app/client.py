@@ -83,8 +83,8 @@ mutation CreateDevice($input: CreateDeviceInput!) {
 
 # Блок запуска
 if __name__ == "__main__":
-    print("🚀 GraphQL Клиент — Devices (Week 06)")
-    print(f"📍 Эндпоинт: {GRAPHQL_URL}\n")
+    print(" GraphQL Клиент — Devices (Week 06)")
+    print(f" Эндпоинт: {GRAPHQL_URL}\n")
     
     # 1. Создание устройства (Mutation)
     print(" 1. Создаём устройство...")

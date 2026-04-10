@@ -1,1 +1,62 @@
-# В этом месте вам необходимо: Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shipments-app
+  labels:
+    app: shipments-app
+    student: s16
+    week: "12"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: shipments-app
+  template:
+    metadata:
+      labels:
+        app: shipments-app
+        student: s16
+    spec:
+      containers:
+        - name: shipments-container
+          image: shipments-s16:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8230
+              protocol: TCP
+          
+          # 🔹 Liveness Probe: "Жив ли контейнер?" (перезапуск если упал)
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8230
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          
+          # 🔹 Readiness Probe: "Готов ли принимать трафик?" (исключение из балансировки)
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8230
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          
+          # 🔹 Resources: запросы и лимиты (обязательно по заданию)
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          
+          # Переменные окружения (опционально, но полезно)
+          env:
+            - name: SERVICE_NAME
+              value: "shipments-svc-s16"
+            - name: PORT
+              value: "8230"

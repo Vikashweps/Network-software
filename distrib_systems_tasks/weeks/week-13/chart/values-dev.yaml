@@ -1,6 +1,25 @@
+# Dev: 1 реплика
 replicaCount: 1
+
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "50m"
+  limits:
+    memory: "128Mi"
+    cpu: "200m"
+
+probes:
+  liveness:
+    initialDelaySeconds: 10
+    periodSeconds: 5
+  readiness:
+    initialDelaySeconds: 5
+    periodSeconds: 3
+
 image:
-  repository: primer/obraz
   tag: "dev"
-service:
-  port: 8000
+
+env:
+  DEBUG: "true"
+  LOG_LEVEL: "debug"

@@ -1,6 +1,48 @@
-replicaCount: 1
+replicaCount: 2
+
 image:
-  repository: primer/obraz
-  tag: "latest"
+  repository: items-s16
+  tag: latest
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+container:
+  name: items-container
+  port: 8201
+
 service:
-  port: 8000
+  type: ClusterIP
+  port: 8201
+  targetPort: 8201
+
+probes:
+  path: /health
+  liveness:
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readiness:
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "100m"
+  limits:
+    memory: "256Mi"
+    cpu: "500m"
+
+labels:
+  app: items-app
+  student: s16
+  week: "13"
+
+env:
+  SERVICE_NAME: items-svc-s16
+  PORT: "8201"

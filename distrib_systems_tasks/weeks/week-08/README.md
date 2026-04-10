@@ -8,6 +8,7 @@
 `variants/<GROUP>/<STUDENT_ID>/week-08.json`
 Вам понадобится задание на streaming метод.
 
+
 ## Что нужно сделать
 1. **Добавить Streaming метод**:
    - В `service.proto` добавьте новый метод с ключевым словом `stream` (Server Streaming).
