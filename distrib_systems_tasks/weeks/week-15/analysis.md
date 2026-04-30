@@ -17,7 +17,7 @@
 
 ## Результаты: REST API (wrk)
 
-| Concurrency | Avg Latency (ms) | P99 Latency (ms) | Requests/sec | 
+| количество | Avg Latency (ms) | P99 Latency (ms) | Requests/sec | 
 |-------------|-----------------|------------------|--------------|
 | 10          | 8.2             | 24.5             | 852          | 
 | 100         | 35.4            | 118.7            | 2134         | 
@@ -25,7 +25,7 @@
 
 ## Результаты: gRPC (ghz)
 
-| Concurrency | Avg Latency (ms) | P99 Latency (ms) | Requests/sec | 
+| количество | Avg Latency (ms) | P99 Latency (ms) | Requests/sec | 
 |-------------|-----------------|------------------|--------------|
 | 10          | 3.8             | 11.2             | 2156         | 
 | 100         | 17.5            | 54.8             | 5834         | 
