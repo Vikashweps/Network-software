@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-gateway-s16
+    ports:
+      - "8080:8080" 
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      products-svc-s16:
+        condition: service_healthy
+      other-svc-s16:
+        condition: service_healthy
+    networks:
+      - pizza-network
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  products-svc-s16:
+    build:
+      context: .
+      dockerfile: Dockerfile.app  
+    container_name: products-svc-s16
+    ports:
+      - "8087:8223"
+    expose:
+      - "8223" 
+    volumes:
+      - .:/app
+      - app-uploads:/app/uploads
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8223/discover"]  
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - pizza-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  other-svc-s16:
+    build:
+      context: .
+      dockerfile: Dockerfile.service2
+    container_name: other-svc-s16
+    ports:
+      - "8088:8224"
+    expose:
+      - "8224"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8224/other"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - pizza-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  app-uploads:
+
+networks:
+  pizza-network:
+    name: pizza-network 
+    driver: bridge
