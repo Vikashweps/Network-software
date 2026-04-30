@@ -14,7 +14,6 @@ week-06/ – GraphQL-клиент
 
 week-07/ – gRPC (proto, сервер, клиент)
 
-week-08-11/ – итоговые практики
 
 ## Технологии
 - Python, FastAPI, Uvicorn
